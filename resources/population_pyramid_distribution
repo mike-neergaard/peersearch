@@ -1,0 +1,17 @@
+Use Weibull distribution:
+W(x; 1.32, 32.9)
+
+The 5-year ranges x to x+5 were converted to x+2.5.  This is only a first 
+order approximation, and does not take slope into account.  However, more
+precision is pure fantasy -- I can't match the data that well with a
+distribution anyway.
+
+I used R to fit distributions to the data. Weibull was the clear winner. 
+I hand-tuned the Weibull distribution to
+shape (k): 1.32
+Scale (lambda): 32.9
+
+Sadly, the tail is too thick. the CDF at 130 is only 0.995, so truncate 
+at 125 and be happy that our Logan's Run remake has pushed the age back 
+from 30.  The c_pop_pyramid_dist class can be replaced  if there is ever 
+a later version.
