@@ -1,12 +1,10 @@
-# peersearch
-Peer Search
-===========
+#Peer Search
 This program is provided under the GPLv3 license. 
 
 Implements a fast search for to select N entries from a dataset of individuals  
 such that the entries are "close" to a given N-tuple.  (lat, long, age in the test rig).
 
-You can ~~read in a datafile, or~~ autogenerate a random dataset. 
+You can ~~read in a datafile, or~~ autogenerate a random dataset. The interesting part is the c_bsp class found in space_partition_tree.cpp. The rest is a reasonably interesting model, but mostly serves as a test rig.
 
 This program was generated in response to a programming challenge, and turned out to be interesting.
 
@@ -24,7 +22,7 @@ mike@mikeneergaard.com
 
 Data Model
 ==========
-The data model has two parts -- age distribution and population distribution.
+The data model generates people.  It has two parts -- age distribution and population distribution.
 The age and location are generated as independent variables. 
 
 Age Model
@@ -117,12 +115,12 @@ Algorithm
 =========
 The algorithm preprocesses the data, generating a Binary Space Partition
 tree such that the population _P_ of each leaf satisfies _P_ < 2 _T_ for some target population _T_.
+The algorithm divides any space into regions with roughly the same population. 
 
 Coordinates and Distance
 ------------------------
-The algorithm divides any space into regions.  In this case, bounded 
-by latitude, longitude, and age, such that each region has roughly the same 
-population.  The initial region has boundaries defined by 180 W, 180 E, 
+In this case, it is fed latitude, longitude, and age.
+The initial region has boundaries defined by 180 W, 180 E, 
 90 N, and 90 S. The 180 longitude line is convenient numerically, and 
 runs mostly through the unpopulated Pacific Ocean.
 
@@ -148,7 +146,7 @@ second half into the right leaf.
 Once all the data is read in, the population requirements are lowered, and
 further splitting takes place.
 
-The idea is that a search (lat, long, age) tuple will of necessity fall 
+The idea is that a search N-tuple will of necessity fall 
 into a a defined cuboid, and that the population within the cuboid will 
 be "close" to the given tuple.  
 
@@ -172,7 +170,14 @@ are duplicated in the tree with no particular means of correction,
 at least not without a map from DB entries to tree data.  Happily,
 DB syncronicity is not part of the challenge.
 
-The covering data is kept in 6 separate sets, one for each face.
+The covering data is kept in 2N separate sets, one for each face. Ergo, if
+a point is close to a face, neighbors across the face can be taken into account.
+
+We are missing some neighbors.  An open cover of a cuboid 
+intersects 3^n cuboids, while we are using only the facing cuboids. However,
+the number of neighbors covered in our scheme goes as Θ(n^(N-1)), where n^N is the
+approximate number of points in a cuboid.  The number of neighbors missed, on the
+other hand, only goes as O(n^(N-2)). 
 
 Once all data has been read in, the covering data is trimmed, and it
 is ready to support searching.
